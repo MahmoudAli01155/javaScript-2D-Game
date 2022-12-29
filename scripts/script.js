@@ -16,6 +16,8 @@ window.addEventListener("load", function () {
           this.game.keys.push(e.key);
         } else if (e.key === " ") {
           this.game.player.shootTop();
+        } else if (e.key === "d") {
+          this.game.debug = !this.game.debug;
         }
       });
       window.addEventListener("keyup", (e) => {
@@ -58,13 +60,13 @@ window.addEventListener("load", function () {
       this.height = 190;
       this.x = 20;
       this.y = 100;
-      this.frameX =0;
+      this.frameX = 0;
       this.frameY = 0;
       this.maxFrame = 37;
       this.speedY = 0;
       this.maxSpeed = 3;
       this.projectiles = [];
-      this.image = document.getElementById('player');
+      this.image = document.getElementById("player");
     }
     update() {
       if (this.game.keys.includes("ArrowUp")) this.speedY = -this.maxSpeed;
@@ -76,20 +78,30 @@ window.addEventListener("load", function () {
       this.projectiles.forEach((projectile) => {
         projectile.update();
       });
-      this.projectiles = this.projectiles.filter(projectile => !projectile.markedForDeletion);
+      this.projectiles = this.projectiles.filter(
+        (projectile) => !projectile.markedForDeletion
+      );
       //sprite animation
-      if (this.frameX < this.maxFrame){
+      if (this.frameX < this.maxFrame) {
         this.frameX++;
       } else {
         this.frameX = 0;
       }
-      
     }
     draw(context) {
-      context.fillStyle = "black";
-      context.fillRect(this.x, this.y, this.width, this.height);
-      context.drawImage(this.image,this.frameX * this.width,this.frameY * this.height,this.width,this.height,this.x,this.y,
-        this.width,this.height)
+      if (this.game.debug)
+        context.strokeRect(this.x, this.y, this.width, this.height);
+      context.drawImage(
+        this.image,
+        this.frameX * this.width,
+        this.frameY * this.height,
+        this.width,
+        this.height,
+        this.x,
+        this.y,
+        this.width,
+        this.height
+      );
       this.projectiles.forEach((projectile) => {
         projectile.draw(context);
       });
@@ -116,20 +128,40 @@ window.addEventListener("load", function () {
       this.markedForDeletation = false;
       this.lives = 5;
       this.score = this.lives;
+      this.frameX = 0;
+      this.frameY = 0;
+      this.maxFrame = 37;
     }
 
     //this function use to update place enemy and move it
     update() {
-      this.x += this.speedX; //increase x by speedx to move enemy
+      this.x += this.speedX - this.game.speed; //increase x by speedx to move enemy
       if (this.x + this.width < 0) this.markedForDeletation = true; //check if enemy reach to end screen delete it
+      // sprite animation
+      if (this.frameX < this.maxFrame) {
+        this.frameX++;
+      } else this.frameX = 0;
     }
 
     //this function use to draw enemy afetr move it (after call update method)
     draw(context) {
       //get context argument as parameter (context instance from convas)
-      context.fillStyle = "red"; //color red
-      context.fillRect(this.x, this.y, this.width, this.height); //draw rectangle in position x,y and width and height
-      context.fillStyle = "black"; //color black
+
+      if (this.game.debug) {
+        //draw rectangle in position x,y and width and height only if the debug is true
+        context.strokeRect(this.x, this.y, this.width, this.height);
+      }
+      context.drawImage(
+        this.image,
+        this.frameX * this.width,
+        this.frameY * this.height,
+        this.width,
+        this.height,
+        this.x,
+        this.y,
+        this.width,
+        this.height
+      );
       context.font = "20px Helvetica"; //
       context.fillText(this.lives, this.x, this.y); //draw text like 5
     }
@@ -142,14 +174,16 @@ window.addEventListener("load", function () {
     constructor(game) {
       //get parameter game  and pass it to super class (Enemy)
       super(game); //because Enemy need parameter game then nedd pass game to it
-      this.width = 228 * 0.2; //
-      this.height = 169 * 0.2;
+      this.width = 228; //
+      this.height = 169;
       this.y = Math.random() * (this.game.height * 0.9 - this.height); //set y axis by random
+      this.image = document.getElementById("angler1");
+      this.frameY = Math.floor(Math.random * 3);
     }
   }
 
   class Layer {
-    constructor(game,image,speedModifier){
+    constructor(game, image, speedModifier) {
       this.game = game;
       this.image = image;
       this.speedModifier = speedModifier;
@@ -158,34 +192,34 @@ window.addEventListener("load", function () {
       this.x = 0;
       this.y = 0;
     }
-    update(){
-      if (this.x <= -this.width) this.x =0;
+    update() {
+      if (this.x <= -this.width) this.x = 0;
       this.x -= this.game.speed * this.speedModifier;
     }
-    draw(context){
+    draw(context) {
       context.drawImage(this.image, this.x, this.y);
       context.drawImage(this.image, this.x + this.width, this.y);
     }
   }
 
-  class Background { 
-    constructor(game){
+  class Background {
+    constructor(game) {
       this.game = game;
-      this.image1 = document.getElementById('layer1');
-      this.image2 = document.getElementById('layer2');
-      this.image3 = document.getElementById('layer3');
-      this.image4 = document.getElementById('layer4');
-      this.layer1 = new Layer(this.game ,this.image1 , 0.2);
-      this.layer2 = new Layer(this.game ,this.image2 , 0.4);
-      this.layer3 = new Layer(this.game ,this.image3 , 1);
-      this.layer4 = new Layer(this.game ,this.image4 , 1.5);
-      this.layers =[this.layer1, this.layer2, this.layer3];
+      this.image1 = document.getElementById("layer1");
+      this.image2 = document.getElementById("layer2");
+      this.image3 = document.getElementById("layer3");
+      this.image4 = document.getElementById("layer4");
+      this.layer1 = new Layer(this.game, this.image1, 0.2);
+      this.layer2 = new Layer(this.game, this.image2, 0.4);
+      this.layer3 = new Layer(this.game, this.image3, 1);
+      this.layer4 = new Layer(this.game, this.image4, 1.5);
+      this.layers = [this.layer1, this.layer2, this.layer3];
     }
-    update(){
-      this.layers.forEach(Layer =>Layer.update() );
+    update() {
+      this.layers.forEach((Layer) => Layer.update());
     }
-    draw(context){
-      this.layers.forEach(layer => layer.draw(context));
+    draw(context) {
+      this.layers.forEach((layer) => layer.draw(context));
     }
   }
 
@@ -249,7 +283,7 @@ window.addEventListener("load", function () {
     constructor(width, height) {
       this.width = width;
       this.height = height;
-      this.background = new Background(this)
+      this.background = new Background(this);
       this.player = new Player(this);
       this.input = new InputHandler(this);
       this.ui = new UI(this);
@@ -266,7 +300,8 @@ window.addEventListener("load", function () {
       this.winningScore = 10;
       this.gameTime = 0; // time counter
       this.timeLimit = 5000; //time of the game
-      this.speed = 1; // game speed 
+      this.speed = 1; // game speed
+      this.debug = true; //debug state
     }
     update(deltaTime) {
       //game time mang ment
