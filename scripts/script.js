@@ -103,6 +103,8 @@ window.addEventListener("load", function () {
       this.x=this.game.width; //get width of game (game there is enemy)
       this.speedX=Math.random() * -1.5 -0.5; //speed game (enemy) in x axis ex: (0.9001*-1.5)=1.35015-5=-1.85015 is negative because enemy move on x axis
       this.markedForDeletation=false;
+      this.lives=5;
+      this.score=this.lives;
     }
 
     //this function use to update place enemy and move it
@@ -115,6 +117,9 @@ window.addEventListener("load", function () {
     draw(context){ //get context argument as parameter (context instance from convas)
       context.fillStyle='red'; //color red
       context.fillRect(this.x,this.y,this.width,this.height); //draw rectangle in position x,y and width and height
+      context.fillStyle='black'; //color black
+      context.font='20px Helvetica'; //
+      context.fillText(this.lives,this.x,this.y); //draw text like 5
     }
   }
 
@@ -176,6 +181,19 @@ window.addEventListener("load", function () {
       }
       this.enemies.forEach(enemy => {
         enemy.update() // call update method all enmies on window to move them 
+        if(this.checkCollision(this.player,enemy)){ //check here if exists collision between player and enemy
+          enemy.markedForDeletation=true; //delete enemy
+        }
+        this.player.projectiles.forEach(projectile =>{ //then check for all projectile if collision with enemy to delete it
+          if(this.checkCollision(projectile,enemy)){
+            enemy.lives--; 
+            projectile.markedForDeletation=true; //delete projectile
+            if(enemy.lives <= 0){
+              enemy.markedForDeletation=true; //delete enemy if lives of it equel 0
+              this.score+=enemy.score;
+            }
+          }
+        })
       });
       this.enemies=this.enemies.filter(enemy =>!enemy.markedForDeletation);//filter enemies and get enmies active only
       if(this.enemyTimer>this.enemyInterval && !this.gameOver)//check if timer over or not or game overOrNot
@@ -201,6 +219,15 @@ window.addEventListener("load", function () {
     addEnemy(){
       this.enemies.push(new Angler1(this));  //add instance from Angler1 to list enemies
       console.log(this.enemies);
+    }
+    //m7moud check collision return true or false 
+    checkCollision(rect1,rect2){
+      //take tow parameter to check collision
+      return   rect1.x<rect2.x + rect2.width &&
+          rect1.x+rect1.width>rect2.x&&
+          rect1.y<rect2.y+rect2.height &&
+          rect1.height+rect1.y>rect2.y;
+      
     }
   }
   const game = new Game(canvas.width, canvas.height);
