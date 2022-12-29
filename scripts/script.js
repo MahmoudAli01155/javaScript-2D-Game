@@ -73,7 +73,9 @@ window.addEventListener("load", function () {
         projectile.update();
       });
       this.projectiles = this.projectiles.filter(
-        (projectile) => !projectile.markedForDeletion
+        (projectile) => {
+          return !projectile.markedForDeletion;
+        }
       );
     }
     draw(context) {
@@ -187,7 +189,7 @@ window.addEventListener("load", function () {
         this.player.projectiles.forEach(projectile =>{ //then check for all projectile if collision with enemy to delete it
           if(this.checkCollision(projectile,enemy)){
             enemy.lives--; 
-            projectile.markedForDeletation=true; //delete projectile
+            projectile.markedForDeletion=true; //delete projectile
             if(enemy.lives <= 0){
               enemy.markedForDeletation=true; //delete enemy if lives of it equel 0
               this.score+=enemy.score;
@@ -223,10 +225,12 @@ window.addEventListener("load", function () {
     //m7moud check collision return true or false 
     checkCollision(rect1,rect2){
       //take tow parameter to check collision
-      return   rect1.x<rect2.x + rect2.width &&
-          rect1.x+rect1.width>rect2.x&&
-          rect1.y<rect2.y+rect2.height &&
-          rect1.height+rect1.y>rect2.y;
+      return (
+        rect1.x < rect2.x + rect2.width &&
+        rect1.x + rect1.width > rect2.x &&
+        rect1.y < rect2.y + rect2.height &&
+        rect1.height + rect1.y > rect2.y
+      );
       
     }
   }
