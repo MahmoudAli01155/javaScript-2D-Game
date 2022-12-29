@@ -162,9 +162,18 @@ window.addEventListener("load", function () {
       this.enemyInterval=1000; //this tow properties to create every 1s enemy
       this.gameOver=false; 
       this.ammo = 20;
+      this.maxAmmo = 50;
+      this.amoTimer = 0;
+      this.ammoInterval = 500; // shoots refill after half a second
     }
     update(deltaTime) {
       this.player.update();
+      if (this.ammoTimer > this.ammoInterval){
+        if (this.ammo < this.maxAmmo) this.ammo++;
+        this.ammoTimer = 0;
+      }else{
+        this.ammoTimer += deltaTime;
+      }
       this.enemies.forEach(enemy => {
         enemy.update() // call update method all enmies on window to move them 
       });
@@ -195,12 +204,15 @@ window.addEventListener("load", function () {
     }
   }
   const game = new Game(canvas.width, canvas.height);
+  let lastTime = 0;
   // Animation loop m7moudn hassan
-  function animate() {
+  function animate(timeStamp) {
+    const deltaTime = timeStamp- lastTime;
+    lastTime = timeStamp;
     ctx.clearRect(0, 0, canvas.width, canvas.height); //to clear when redraw game
-    game.update();
+    game.update(deltaTime);
     game.draw(ctx);
     requestAnimationFrame(animate); //to start animation
   }
-  animate();
+  animate(0);
 });
