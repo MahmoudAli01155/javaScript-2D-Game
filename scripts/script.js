@@ -61,7 +61,7 @@ window.addEventListener("load", function () {
   class Background { }
 
   class UI {           //  Drawing game UI   Aya Hassan
-    constractor(game){
+    constructor(game){
       this.game = game;
       this.fontSize = 25;
       this.fontFamily = 'Helvetica';
