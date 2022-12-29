@@ -141,7 +141,21 @@ window.addEventListener("load", function () {
 
   class Background {}
 
-  class UI {}
+  class UI {           //  Drawing game UI   Aya Hassan
+    constructor(game){
+      this.game = game;
+      this.fontSize = 25;
+      this.fontFamily = 'Helvetica';
+      this.color = 'yellow';
+    }
+    draw(context){
+        // ammo
+        context.fillStyle = this.color;
+        for(let i =0; i < this.game.ammo;i++){
+          context.fillRect(20 + 5 * i,50,3,20)
+        }
+    }
+  }
 
   class Game {
     constructor(width, height) {
@@ -154,7 +168,11 @@ window.addEventListener("load", function () {
       this.enemyTimer = 0;
       this.enemyInterval = 1000; //this tow properties to create every 1s enemy
       this.gameOver = false;
+      this.ui = new UI(this);
       this.ammo = 20;
+      this.maxAmmo = 50;
+      this.amoTimer = 0;
+      this.ammoInterval = 500; // shoots refill after half a second
     }
     update(deltaTime) {
       this.player.update();
@@ -173,7 +191,12 @@ window.addEventListener("load", function () {
             }
           }
         });
-      });
+      if (this.ammoTimer > this.ammoInterval){
+        if (this.ammo < this.maxAmmo) this.ammo++;
+        this.ammoTimer = 0;
+      }else{
+        this.ammoTimer += deltaTime;
+      }
       this.enemies = this.enemies.filter((enemy) => !enemy.markedForDeletation); //filter enemies and get enmies active only
       if (this.enemyTimer > this.enemyInterval && !this.gameOver) {
         //check if timer over or not or game overOrNot
@@ -185,10 +208,10 @@ window.addEventListener("load", function () {
         this.enemyTimer += deltaTime;
       }
     }
-    draw(context) {
+    draw(context) { 
       this.player.draw(context);
-
-      this.enemies.forEach((enemy) => {
+      this.ui.draw(context);
+      this.enemies.forEach(enemy => {
         enemy.draw(context); // call draw method all enmies on window to draw them  after moving
       });
     }
@@ -207,12 +230,15 @@ window.addEventListener("load", function () {
     }
   }
   const game = new Game(canvas.width, canvas.height);
+  let lastTime = 0;
   // Animation loop m7moudn hassan
-  function animate() {
+  function animate(timeStamp) {
+    const deltaTime = timeStamp- lastTime;
+    lastTime = timeStamp;
     ctx.clearRect(0, 0, canvas.width, canvas.height); //to clear when redraw game
-    game.update();
+    game.update(deltaTime);
     game.draw(ctx);
     requestAnimationFrame(animate); //to start animation
   }
-  animate();
+  animate(0);
 });
