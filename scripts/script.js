@@ -145,14 +145,23 @@ window.addEventListener("load", function () {
       this.game = game;
       this.fontSize = 25;
       this.fontFamily = 'Helvetica';
-      this.color = 'yellow';
+      this.color = 'white';
     }
     draw(context){
+      // this 5 line to  shadow of projectile
+      context.save();
+      context.fillStyle = this.color;
+      context.shadowOffsetX = 2;
+      context.shadowOffsetY = 2;
+      context.shadowColor = "black";
+      context.font=this.fontSize+'px'+this.fontFamily;
+      //score
+      context.fillText('Score: '+this.game.score,20,40);
         // ammo
-        context.fillStyle = this.color;
         for(let i =0; i < this.game.ammo;i++){
-          context.fillRect(20 + 5 * i,50,3,20)
+          context.fillRect(20+5*i,50,3,20)
         }
+        context.restore();
     }
   }
 
@@ -170,11 +179,13 @@ window.addEventListener("load", function () {
       this.gameOver=false; 
       this.ammo = 20;
       this.maxAmmo = 50;
-      this.amoTimer = 0;
+      this.ammoTimer = 0;
       this.ammoInterval = 500; // shoots refill after half a second
+      this.score=0;
+      this.winningScore=10;
     }
     update(deltaTime) {
-      this.player.update();
+      this.player.update(deltaTime);
       if (this.ammoTimer > this.ammoInterval){
         if (this.ammo < this.maxAmmo) this.ammo++;
         this.ammoTimer = 0;
@@ -193,6 +204,8 @@ window.addEventListener("load", function () {
             if(enemy.lives <= 0){
               enemy.markedForDeletation=true; //delete enemy if lives of it equel 0
               this.score+=enemy.score;
+              //check score reach to 10
+              if(this.score>this.winningScore) this.gameOver=true;
             }
           }
         })
@@ -210,9 +223,7 @@ window.addEventListener("load", function () {
     }
     draw(context) { 
       this.player.draw(context);
-
       this.ui.draw(context);
-
       this.enemies.forEach(enemy => {
         enemy.draw(context); // call draw method all enmies on window to draw them  after moving
       });
