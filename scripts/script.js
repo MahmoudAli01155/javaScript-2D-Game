@@ -133,7 +133,21 @@ window.addEventListener("load", function () {
 
   class Background {}
 
-  class UI {}
+  class UI {           //  Drawing game UI   Aya Hassan
+    constructor(game){
+      this.game = game;
+      this.fontSize = 25;
+      this.fontFamily = 'Helvetica';
+      this.color = 'yellow';
+    }
+    draw(context){
+        // ammo
+        context.fillStyle = this.color;
+        for(let i =0; i < this.game.ammo;i++){
+          context.fillRect(20 + 5 * i,50,3,20)
+        }
+    }
+  }
 
   class Game {
     constructor(width, height) {
@@ -141,6 +155,7 @@ window.addEventListener("load", function () {
       this.height = height;
       this.player = new Player(this);
       this.input = new InputHandler(this);
+      this.ui = new UI(this);
       this.keys=[];
       this.enemies=[];//list of enemies to contain all enemy
       this.enemyTimer=0;
@@ -164,8 +179,10 @@ window.addEventListener("load", function () {
         this.enemyTimer+=deltaTime;
       }
     }
-    draw(context) {
+    draw(context) { 
       this.player.draw(context);
+
+      this.ui.draw(context);
 
       this.enemies.forEach(enemy => {
         enemy.draw(context); // call draw method all enmies on window to draw them  after moving
