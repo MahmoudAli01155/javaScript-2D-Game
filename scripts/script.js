@@ -37,7 +37,7 @@ window.addEventListener("load", function () {
       this.height = 3;
       this.speed = 3;
       this.markedForDeletion = false;
-      this.image = document.getElementById('projectile');      
+      this.image = document.getElementById("projectile");
     }
     //7 meathod to change the Position of projectle using it's speed attribute
     update() {
@@ -53,15 +53,15 @@ window.addEventListener("load", function () {
 
   //mohamed alsayed
   class Particle {
-    constructor(game, x, y){
+    constructor(game, x, y) {
       this.game = game;
       this.x = x;
       this.y = y;
-      this.image = document.getElementById('gears');
+      this.image = document.getElementById("gears");
       this.frameX = Math.floor(Math.random() * 3);
       this.frameY = Math.floor(Math.random() * 3);
       this.spriteSize = 50;
-      this.sizeModifier =(Math.random() * 0.5 + 0.5).toFixed(1);
+      this.sizeModifier = (Math.random() * 0.5 + 0.5).toFixed(1);
       this.size = this.spriteSize * this.sizeModifier;
       this.speedX = Math.random() * 6 - 3;
       this.speedY = Math.random() * -15;
@@ -70,22 +70,35 @@ window.addEventListener("load", function () {
       this.angle = 0;
       this.va = Math.random() * 0.2 - 0.1;
       this.bounced = 0;
-      this.bottomBounceBoundary = Math.random() * 100 + 60;
+      this.bottomBounceBoundary = Math.random() * 80 + 60;
     }
-    update(){
+    update() {
       this.angle += this.va;
       this.speedY += this.gravity;
       this.x -= this.speedX;
       this.y += this.speedY;
-      if (this.y > this.game.height + this.size || this.x < 0 - this.size) this.markedForDeletion = true;
-      if (this.y > this.game.height - this.bottomBounceBoundary && this.bounced < 2){
+      if (this.y > this.game.height + this.size || this.x < 0 - this.size)
+        this.markedForDeletion = true;
+      if (
+        this.y > this.game.height - this.bottomBounceBoundary &&
+        this.bounced < 2
+      ) {
         this.bounced++;
         this.speedY *= -0.5;
       }
     }
-    draw(context){
-      context.drawImage(this.image,this.frameX * this.spriteSize,this.frameY * this.spriteSize,this.spriteSize,
-        this.spriteSize,this.x,this.y,this.size,this.size)
+    draw(context) {
+      context.drawImage(
+        this.image,
+        this.frameX * this.spriteSize,
+        this.frameY * this.spriteSize,
+        this.spriteSize,
+        this.spriteSize,
+        this.x,
+        this.y,
+        this.size,
+        this.size
+      );
     }
   }
 
@@ -113,7 +126,7 @@ window.addEventListener("load", function () {
         this.speedY = this.maxSpeed;
       else this.speedY = 0;
       this.y += this.speedY;
-      
+
       //7 handel projectiles
       this.projectiles.forEach((projectile) => {
         projectile.update();
@@ -128,8 +141,8 @@ window.addEventListener("load", function () {
         this.frameX = 0;
       }
       // power up
-      if (this.powerUp){
-        if (this.powerUpTimer > this.powerUpLimit){
+      if (this.powerUp) {
+        if (this.powerUpTimer > this.powerUpLimit) {
           this.powerUpTimer = 0;
           this.powerUp = false;
           this.frameY = 0;
@@ -143,9 +156,9 @@ window.addEventListener("load", function () {
     draw(context) {
       if (this.game.debug)
         context.strokeRect(this.x, this.y, this.width, this.height);
-        this.projectiles.forEach(projectile => {
-          projectile.draw(context);
-        });
+      this.projectiles.forEach((projectile) => {
+        projectile.draw(context);
+      });
       context.drawImage(
         this.image,
         this.frameX * this.width,
@@ -157,7 +170,6 @@ window.addEventListener("load", function () {
         this.width,
         this.height
       );
-      
     }
     //7 creat method to shoot from mouse
     shootTop() {
@@ -174,14 +186,14 @@ window.addEventListener("load", function () {
         this.projectiles.push(
           new Projectile(this.game, this.x + 80, this.y + 175)
         );
-        
       }
     }
 
-    enterPowerUp(){
+    enterPowerUp() {
       this.powerUpTimer = 0;
       this.powerUp = true;
-      this.game.ammo = this.game.maxAmmo;
+      if (this.game.ammo < this.game.maxAmmo)
+        this.game.ammo = this.game.maxAmmo;
     }
   }
 
@@ -228,9 +240,9 @@ window.addEventListener("load", function () {
         this.width,
         this.height
       );
-      if(this.game.debug){
+      if (this.game.debug) {
         context.font = "20px Helvetica"; //
-      context.fillText(this.lives, this.x, this.y); //draw text like 5
+        context.fillText(this.lives, this.x, this.y); //draw text like 5
       }
     }
   }
@@ -244,7 +256,7 @@ window.addEventListener("load", function () {
       super(game); //because Enemy need parameter game then nedd pass game to it
       this.width = 228; //
       this.height = 169;
-      this.y = Math.random() * (this.game.height * 0.9 - this.height); //set y axis by random
+      this.y = Math.random() * (this.game.height * 0.95 - this.height); //set y axis by random
       this.image = document.getElementById("angler1");
       this.frameY = Math.floor(Math.random() * 3);
       this.lives = 2;
@@ -252,41 +264,79 @@ window.addEventListener("load", function () {
     }
   }
 
-    //m7moud hassan
-    //then create types from enemy first angler1
-    class Angler2 extends Enemy {
-      //Enemy is the parent class and angler1 is child this mean angler contain all
-      //properties of class enemy (update and draw and game x speedx ..)
-      constructor(game) {
-        //get parameter game  and pass it to super class (Enemy)
-        super(game); //because Enemy need parameter game then nedd pass game to it
-        this.width = 213; //
-        this.height = 165;
-        this.y = Math.random() * (this.game.height * 0.9 - this.height); //set y axis by random
-        this.image = document.getElementById("angler2");
-        this.frameY = Math.floor(Math.random() * 2);
-        this.lives = 3;
-        this.score = this.lives;
-      }
+  //m7moud hassan
+  //then create types from enemy first angler1
+  class Angler2 extends Enemy {
+    //Enemy is the parent class and angler1 is child this mean angler contain all
+    //properties of class enemy (update and draw and game x speedx ..)
+    constructor(game) {
+      //get parameter game  and pass it to super class (Enemy)
+      super(game); //because Enemy need parameter game then nedd pass game to it
+      this.width = 213; //
+      this.height = 165;
+      this.y = Math.random() * (this.game.height * 0.95 - this.height); //set y axis by random
+      this.image = document.getElementById("angler2");
+      this.frameY = Math.floor(Math.random() * 2);
+      this.lives = 3;
+      this.score = this.lives;
     }
+  }
 
-    //m7moud create luckyfish enemy
-    class LuckyFish extends Enemy {
-      //Enemy is the parent class and angler1 is child this mean angler contain all
-      //properties of class enemy (update and draw and game x speedx ..)
-      constructor(game) {
-        //get parameter game  and pass it to super class (Enemy)
-        super(game); //because Enemy need parameter game then nedd pass game to it
-        this.width = 99; //
-        this.height = 95;
-        this.y = Math.random() * (this.game.height * 0.9 - this.height); //set y axis by random
-        this.image = document.getElementById("lucky");
-        this.frameY = Math.floor(Math.random() * 2);
-        this.lives = 3;
-        this.score = 15;
-        this.type='lucky';
-      }
+  //m7moud create luckyfish enemy
+  class LuckyFish extends Enemy {
+    //Enemy is the parent class and angler1 is child this mean angler contain all
+    //properties of class enemy (update and draw and game x speedx ..)
+    constructor(game) {
+      //get parameter game  and pass it to super class (Enemy)
+      super(game); //because Enemy need parameter game then nedd pass game to it
+      this.width = 99; //
+      this.height = 95;
+      this.y = Math.random() * (this.game.height * 0.95 - this.height); //set y axis by random
+      this.image = document.getElementById("lucky");
+      this.frameY = Math.floor(Math.random() * 2);
+      this.lives = 3;
+      this.score = 15;
+      this.type = "lucky";
     }
+  }
+  // Mahmoud Ali HiveWhale class Enemy
+  class HiveWhale extends Enemy {
+    //Enemy is the parent class and angler1 is child this mean angler contain all
+    //properties of class enemy (update and draw and game x speedx ..)
+    constructor(game) {
+      //get parameter game  and pass it to super class (Enemy)
+      super(game); //because Enemy need parameter game then nedd pass game to it
+      this.width = 400; //
+      this.height = 227;
+      this.y = Math.random() * (this.game.height * 0.9 - this.height); //set y axis by random
+      this.image = document.getElementById("hiveWhale");
+      this.frameY = 0;
+      this.lives = 15;
+      this.score = this.lives;
+      this.type = "hive";
+      this.speedX = Math.random() * -1.2 - 0.2;
+    }
+  }
+  // Mahmoud Ali Drone class Enemy
+  class Drone extends Enemy {
+    //Enemy is the parent class and Drone is child this mean Drone contain all
+    //properties of class enemy (update and draw and game x speedx ..)
+    constructor(game, x, y) {
+      //get parameter game  and pass it to super class (Enemy)
+      super(game); //because Enemy need parameter game then nedd pass game to it
+      this.width = 115; //
+      this.height = 95;
+      this.x = x;
+      this.y = y;
+      this.y = Math.random() * (this.game.height * 0.9 - this.height); //set y axis by random
+      this.image = document.getElementById("drone");
+      this.frameY = Math.floor(Math.random() * 2);
+      this.lives = 3;
+      this.score = this.lives;
+      this.type = "drone";
+      this.speedX = Math.random() * -4.2 - 0.5;
+    }
+  }
 
   class Layer {
     constructor(game, image, speedModifier) {
@@ -344,10 +394,9 @@ window.addEventListener("load", function () {
       context.shadowOffsetX = 2;
       context.shadowOffsetY = 2;
       context.shadowColor = "black";
-      context.font = this.fontSize + "px " + this.fontFamily
+      context.font = this.fontSize + "px " + this.fontFamily;
       //score
       context.fillText("Score: " + this.game.score, 20, 40);
-      
 
       //timer draw
       const formattedTime = (this.game.gameTime * 0.001).toFixed(1);
@@ -378,11 +427,11 @@ window.addEventListener("load", function () {
           this.game.height * 0.5 + 20
         );
       }
-       // ammo
-       if (this.game.player.powerUp) context.fillStyle = '#ffffbd';
-       for (let i = 0; i < this.game.ammo; i++) {
-         context.fillRect(20 + 5 * i, 50, 3, 20);
-       }
+      // ammo
+      if (this.game.player.powerUp) context.fillStyle = "#ffffbd";
+      for (let i = 0; i < this.game.ammo; i++) {
+        context.fillRect(20 + 5 * i, 50, 3, 20);
+      }
       context.restore();
     }
   }
@@ -426,17 +475,25 @@ window.addEventListener("load", function () {
       } else {
         this.ammoTimer += deltaTime;
       }
-      this.particles.forEach(particle => particle.update());
-      this.particle = this.particles.filter(particle => !particle.markedForDeletion);
+      this.particles.forEach((particle) => particle.update());
+      this.particle = this.particles.filter(
+        (particle) => !particle.markedForDeletion
+      );
       this.enemies.forEach((enemy) => {
         enemy.update(); // call update method all enmies on window to move them
         if (this.checkCollision(this.player, enemy)) {
           //check here if exists collision between player and enemy
           enemy.markedForDeletion = true; //delete enemy
-          for (let i=0; i <10;i++){
-            this.particles.push(new Particle(this,enemy.x + enemy.width * 0.5 ,enemy.y + enemy.height * 0.5 ));
+          for (let i = 0; i < enemy.score; i++) {
+            this.particles.push(
+              new Particle(
+                this,
+                enemy.x + enemy.width * 0.5,
+                enemy.y + enemy.height * 0.5
+              )
+            );
           }
-          if (enemy.type = 'lucky') this.player.enterPowerUp();
+          if (enemy.type === "lucky") this.player.enterPowerUp();
           else this.score--;
         }
         this.player.projectiles.forEach((projectile) => {
@@ -444,13 +501,36 @@ window.addEventListener("load", function () {
           if (this.checkCollision(projectile, enemy)) {
             enemy.lives--;
             projectile.markedForDeletion = true; //delete projectile
-            this.particles.push(new Particle(this,enemy.x + 
-            enemy.width * 0.5 ,enemy.y + enemy.height * 0.5 ));
+            this.particles.push(
+              new Particle(
+                this,
+                enemy.x + enemy.width * 0.5,
+                enemy.y + enemy.height * 0.5
+              )
+            );
             if (enemy.lives <= 0) {
-              for (let i=0; i <10;i++){
-                this.particles.push(new Particle(this,enemy.x + enemy.width * 0.5 ,enemy.y + enemy.height * 0.5 ));
+              for (let i = 0; i < enemy.score; i++) {
+                this.particles.push(
+                  new Particle(
+                    this,
+                    enemy.x + enemy.width * 0.5,
+                    enemy.y + enemy.height * 0.5
+                  )
+                );
               }
-              enemy.markedForDeletion = true; //delete enemy if lives of it equel 0  
+              enemy.markedForDeletion = true; //delete enemy if lives of it equel 0
+              //creating 5 Drone after HiveWhale lives end
+              for (let i = 0; i < 5; i++) {
+                if (enemy.type === "hive") {
+                  this.enemies.push(
+                    new Drone(
+                      this,
+                      enemy.x + Math.random() * enemy.width,
+                      enemy.y + Math.random() * enemy.height * 0.5
+                    )
+                  );
+                }
+              }
               if (!this.gameOver) this.score += enemy.score;
               //check score reach to 10
               if (this.score > this.winningScore) this.gameOver = true;
@@ -471,9 +551,9 @@ window.addEventListener("load", function () {
     }
     draw(context) {
       this.background.draw(context);
-      this.player.draw(context);
       this.ui.draw(context);
-      this.particles.forEach(particle => particle.draw(context));
+      this.player.draw(context);
+      this.particles.forEach((particle) => particle.draw(context));
       this.enemies.forEach((enemy) => {
         enemy.draw(context); // call draw method all enmies on window to draw them  after moving
       });
@@ -481,11 +561,13 @@ window.addEventListener("load", function () {
     }
     //this function to addEnemy to window
     addEnemy() {
-      const randomize=Math.random(); //to generate number random
-      if(randomize <0.3)  this.enemies.push(new Angler1(this)); //add instance from Angler1 to list enemies
-      else if(randomize<0.6 )  this.enemies.push(new Angler2(this));
+      const randomize = Math.random(); //to generate number random
+      if (randomize < 0.3) this.enemies.push(new Angler1(this));
+      //add instance from Angler1 to list enemies
+      else if (randomize < 0.6) this.enemies.push(new Angler2(this));
+      //add instance from Hivewhale to list enemies
+      else if (randomize < 0.8) this.enemies.push(new HiveWhale(this));
       else this.enemies.push(new LuckyFish(this)); //add luckyFish
-      console.log(this.enemies);
     }
     //m7moud check collision return true or false
     checkCollision(rect1, rect2) {
