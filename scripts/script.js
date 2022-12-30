@@ -37,6 +37,7 @@ window.addEventListener("load", function () {
       this.height = 3;
       this.speed = 3;
       this.markedForDeletion = false;
+      this.image = document.getElementById('projectile');      
     }
     //7 meathod to change the Position of projectle using it's speed attribute
     update() {
@@ -46,8 +47,7 @@ window.addEventListener("load", function () {
     }
     //7
     draw(context) {
-      context.fillStyle = "yellow";
-      context.fillRect(this.x, this.y, this.width, this.height);
+      context.drawImage(this.image, this.x, this.y);
     }
   }
 
@@ -295,7 +295,7 @@ window.addEventListener("load", function () {
     constructor(game) {
       this.game = game;
       this.fontSize = 25;
-      this.fontFamily = "Helvetica";
+      this.fontFamily = "Bangers"; //change font family
       this.color = "white";
     }
     draw(context) {
