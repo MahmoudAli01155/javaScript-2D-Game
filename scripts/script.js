@@ -126,8 +126,6 @@ window.addEventListener("load", function () {
       this.x = this.game.width; //get width of game (game there is enemy)
       this.speedX = Math.random() * -1.5 - 0.5; //speed game (enemy) in x axis ex: (0.9001*-1.5)=1.35015-5=-1.85015 is negative because enemy move on x axis
       this.markedForDeletation = false;
-      this.lives = 5;
-      this.score = this.lives;
       this.frameX = 0;
       this.frameY = 0;
       this.maxFrame = 37;
@@ -178,9 +176,47 @@ window.addEventListener("load", function () {
       this.height = 169;
       this.y = Math.random() * (this.game.height * 0.9 - this.height); //set y axis by random
       this.image = document.getElementById("angler1");
-      this.frameY = Math.floor(Math.random * 3);
+      this.frameY = Math.floor(Math.random() * 3);
+      this.lives = 2;
+      this.score = this.lives;
     }
   }
+
+    //m7moud hassan
+    //then create types from enemy first angler1
+    class Angler2 extends Enemy {
+      //Enemy is the parent class and angler1 is child this mean angler contain all
+      //properties of class enemy (update and draw and game x speedx ..)
+      constructor(game) {
+        //get parameter game  and pass it to super class (Enemy)
+        super(game); //because Enemy need parameter game then nedd pass game to it
+        this.width = 213; //
+        this.height = 165;
+        this.y = Math.random() * (this.game.height * 0.9 - this.height); //set y axis by random
+        this.image = document.getElementById("angler2");
+        this.frameY = Math.floor(Math.random() * 2);
+        this.lives = 3;
+        this.score = this.lives;
+      }
+    }
+
+    //m7moud create luckyfish enemy
+    class LuckyFish extends Enemy {
+      //Enemy is the parent class and angler1 is child this mean angler contain all
+      //properties of class enemy (update and draw and game x speedx ..)
+      constructor(game) {
+        //get parameter game  and pass it to super class (Enemy)
+        super(game); //because Enemy need parameter game then nedd pass game to it
+        this.width = 99; //
+        this.height = 95;
+        this.y = Math.random() * (this.game.height * 0.9 - this.height); //set y axis by random
+        this.image = document.getElementById("lucky");
+        this.frameY = Math.floor(Math.random() * 2);
+        this.lives = 3;
+        this.score = 15;
+        this.type='lucky';
+      }
+    }
 
   class Layer {
     constructor(game, image, speedModifier) {
@@ -299,7 +335,7 @@ window.addEventListener("load", function () {
       this.score = 0;
       this.winningScore = 10;
       this.gameTime = 0; // time counter
-      this.timeLimit = 5000; //time of the game
+      this.timeLimit = 15000; //time of the game
       this.speed = 1; // game speed
       this.debug = true; //debug state
     }
@@ -359,7 +395,10 @@ window.addEventListener("load", function () {
     }
     //this function to addEnemy to window
     addEnemy() {
-      this.enemies.push(new Angler1(this)); //add instance from Angler1 to list enemies
+      const randomize=Math.random(); //to generate number random
+      if(randomize <0.3)  this.enemies.push(new Angler1(this)); //add instance from Angler1 to list enemies
+      else if(randomize<0.6 )  this.enemies.push(new Angler2(this));
+      else this.enemies.push(new LuckyFish(this)); //add luckyFish
       console.log(this.enemies);
     }
     //m7moud check collision return true or false
