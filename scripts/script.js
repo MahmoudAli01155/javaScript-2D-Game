@@ -51,6 +51,7 @@ window.addEventListener("load", function () {
     }
   }
 
+  //mohamed alsayed
   class Particle {
     constructor(game, x, y){
       this.game = game;
@@ -433,7 +434,7 @@ window.addEventListener("load", function () {
           //check here if exists collision between player and enemy
           enemy.markedForDeletion = true; //delete enemy
           for (let i=0; i <10;i++){
-            this.particle.push(new Particle(this,enemy.x + enemy.width * 0.5 ,enemy.y + enemy.height * 0.5 ));
+            this.particles.push(new Particle(this,enemy.x + enemy.width * 0.5 ,enemy.y + enemy.height * 0.5 ));
           }
           if (enemy.type = 'lucky') this.player.enterPowerUp();
           else this.score--;
@@ -443,11 +444,11 @@ window.addEventListener("load", function () {
           if (this.checkCollision(projectile, enemy)) {
             enemy.lives--;
             projectile.markedForDeletion = true; //delete projectile
-            this.particle.push(new Particle(this,enemy.x + 
+            this.particles.push(new Particle(this,enemy.x + 
             enemy.width * 0.5 ,enemy.y + enemy.height * 0.5 ));
             if (enemy.lives <= 0) {
               for (let i=0; i <10;i++){
-                this.particle.push(new Particle(this,enemy.x + enemy.width * 0.5 ,enemy.y + enemy.height * 0.5 ));
+                this.particles.push(new Particle(this,enemy.x + enemy.width * 0.5 ,enemy.y + enemy.height * 0.5 ));
               }
               enemy.markedForDeletion = true; //delete enemy if lives of it equel 0  
               if (!this.gameOver) this.score += enemy.score;
