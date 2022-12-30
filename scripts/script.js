@@ -51,7 +51,42 @@ window.addEventListener("load", function () {
     }
   }
 
-  class Particle {}
+  class Particle {
+    constructor(game, x, y){
+      this.game = game;
+      this.x = x;
+      this.y = y;
+      this.image = document.getElementById('gears');
+      this.frameX = Math.floor(Math.random() * 3);
+      this.frameY = Math.floor(Math.random() * 3);
+      this.spriteSize = 50;
+      this.sizeModifier =(Math.random() * 0.5 + 0.5).toFixed(1);
+      this.size = this.spriteSize * this.sizeModifier;
+      this.speedX = Math.random() * 6 - 3;
+      this.speedY = Math.random() * -15;
+      this.gravity = 0.5;
+      this.markedForDeletion = false;
+      this.angle = 0;
+      this.va = Math.random() * 0.2 - 0.1;
+      this.bounced = 0;
+      this.bottomBounceBoundary = Math.random() * 100 + 60;
+    }
+    update(){
+      this.angle += this.va;
+      this.speedY += this.gravity;
+      this.x -= this.speedX;
+      this.y += this.speedY;
+      if (this.y > this.game.height + this.size || this.x < 0 - this.size) this.markedForDeletion = true;
+      if (this.y > this.game.height - this.bottomBounceBoundary && this.bounced < 2){
+        this.bounced++;
+        this.speedY *= -0.5;
+      }
+    }
+    draw(context){
+      context.drawImage(this.image,this.frameX * this.spriteSize,this.frameY * this.spriteSize,this.spriteSize,
+        this.spriteSize,this.x,this.y,this.size,this.size)
+    }
+  }
 
   class Player {
     constructor(game) {
@@ -157,7 +192,7 @@ window.addEventListener("load", function () {
       this.game = game; //assign game to game to use game in this class after
       this.x = this.game.width; //get width of game (game there is enemy)
       this.speedX = Math.random() * -1.5 - 0.5; //speed game (enemy) in x axis ex: (0.9001*-1.5)=1.35015-5=-1.85015 is negative because enemy move on x axis
-      this.markedForDeletation = false;
+      this.markedForDeletion = false;
       this.frameX = 0;
       this.frameY = 0;
       this.maxFrame = 37;
@@ -166,7 +201,7 @@ window.addEventListener("load", function () {
     //this function use to update place enemy and move it
     update() {
       this.x += this.speedX - this.game.speed; //increase x by speedx to move enemy
-      if (this.x + this.width < 0) this.markedForDeletation = true; //check if enemy reach to end screen delete it
+      if (this.x + this.width < 0) this.markedForDeletion = true; //check if enemy reach to end screen delete it
       // sprite animation
       if (this.frameX < this.maxFrame) {
         this.frameX++;
@@ -361,6 +396,7 @@ window.addEventListener("load", function () {
       this.ui = new UI(this);
       this.keys = [];
       this.enemies = []; //list of enemies to contain all enemy
+      this.particles = [];
       this.enemyTimer = 0;
       this.enemyInterval = 1000; //this tow properties to create every 1s enemy
       this.gameOver = false;
@@ -389,11 +425,16 @@ window.addEventListener("load", function () {
       } else {
         this.ammoTimer += deltaTime;
       }
+      this.particles.forEach(particle => particle.update());
+      this.particle = this.particles.filter(particle => !particle.markedForDeletion);
       this.enemies.forEach((enemy) => {
         enemy.update(); // call update method all enmies on window to move them
         if (this.checkCollision(this.player, enemy)) {
           //check here if exists collision between player and enemy
-          enemy.markedForDeletation = true; //delete enemy
+          enemy.markedForDeletion = true; //delete enemy
+          for (let i=0; i <10;i++){
+            this.particle.push(new Particle(this,enemy.x + enemy.width * 0.5 ,enemy.y + enemy.height * 0.5 ));
+          }
           if (enemy.type = 'lucky') this.player.enterPowerUp();
           else this.score--;
         }
@@ -402,8 +443,13 @@ window.addEventListener("load", function () {
           if (this.checkCollision(projectile, enemy)) {
             enemy.lives--;
             projectile.markedForDeletion = true; //delete projectile
+            this.particle.push(new Particle(this,enemy.x + 
+            enemy.width * 0.5 ,enemy.y + enemy.height * 0.5 ));
             if (enemy.lives <= 0) {
-              enemy.markedForDeletation = true; //delete enemy if lives of it equel 0
+              for (let i=0; i <10;i++){
+                this.particle.push(new Particle(this,enemy.x + enemy.width * 0.5 ,enemy.y + enemy.height * 0.5 ));
+              }
+              enemy.markedForDeletion = true; //delete enemy if lives of it equel 0  
               if (!this.gameOver) this.score += enemy.score;
               //check score reach to 10
               if (this.score > this.winningScore) this.gameOver = true;
@@ -411,7 +457,7 @@ window.addEventListener("load", function () {
           }
         });
       });
-      this.enemies = this.enemies.filter((enemy) => !enemy.markedForDeletation); //filter enemies and get enmies active only
+      this.enemies = this.enemies.filter((enemy) => !enemy.markedForDeletion); //filter enemies and get enmies active only
       if (this.enemyTimer > this.enemyInterval && !this.gameOver) {
         //check if timer over or not or game overOrNot
         //if true add enemy to window and rest timer
@@ -426,6 +472,7 @@ window.addEventListener("load", function () {
       this.background.draw(context);
       this.player.draw(context);
       this.ui.draw(context);
+      this.particles.forEach(particle => particle.draw(context));
       this.enemies.forEach((enemy) => {
         enemy.draw(context); // call draw method all enmies on window to draw them  after moving
       });
