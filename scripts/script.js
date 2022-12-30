@@ -379,6 +379,64 @@ window.addEventListener("load", function () {
     }
   }
 
+  //m7moud class Explosion
+  class Explosion{
+    constructor(game,x,y){
+      this.game=game;
+      this.fps=30; //frame per second
+      this.frameX=0;
+      this.spriteWidth=200; //width of sprite
+      this.spriteHeight=200;
+      this.timer=0;
+      this.interval=1000/this.fps;
+      this.markedForDeletion=false;
+      this.maxFrame=8;
+      this.width=this.spriteWidth;
+      this.height=this.spriteHeight;
+      this.x=x-this.width*0.5;
+      this.y=y-this.height*0.5;
+    }
+    //update frame of aix x
+    update(deltaTime){
+      this.x -= this.game.speed;
+      if (this.timer > this.interval) {
+        this.frameX++;
+        this.timer = 0;
+      } else {
+        this.timer += deltaTime;
+      }
+      if (this.frameX > this.maxFrame) this.markedForDeletion = true; //check frame x exit outside frame to delete explosion
+    }
+    //draw explosion
+    draw(context){
+      context.drawImage(
+        this.image,
+        this.frameX * this.spriteWidth,
+        0,
+        this.spriteWidth,
+        this.spriteHeight,
+        this.x,
+        this.y,
+        this.width,
+        this.height
+      );
+    }
+  }
+
+  //smoke type from Explosion 
+  class SmokeExplosion extends Explosion{
+    constructor(game,x,y){
+      super(game, x, y);//pass parameter
+      this.image = document.getElementById("smokeExplosion");
+    }
+  }
+  //fire  type from Explosion
+  class FireExplosion extends Explosion{
+    constructor(game,x,y){
+      super(game, x, y);//pass parameter
+      this.image = document.getElementById("fireExplosion");
+    }
+  }
   class UI {
     //  Drawing game UI   Aya Hassan
     constructor(game) {
@@ -445,6 +503,7 @@ window.addEventListener("load", function () {
       this.input = new InputHandler(this);
       this.ui = new UI(this);
       this.keys = [];
+      this.explosions=[];//this contain explosions [smoke and fire]
       this.enemies = []; //list of enemies to contain all enemy
       this.particles = [];
       this.enemyTimer = 0;
@@ -484,6 +543,7 @@ window.addEventListener("load", function () {
         if (this.checkCollision(this.player, enemy)) {
           //check here if exists collision between player and enemy
           enemy.markedForDeletion = true; //delete enemy
+          this.addExplosion(enemy);//call explosion after kill enemy
           for (let i = 0; i < enemy.score; i++) {
             this.particles.push(
               new Particle(
@@ -519,6 +579,7 @@ window.addEventListener("load", function () {
                 );
               }
               enemy.markedForDeletion = true; //delete enemy if lives of it equel 0
+              this.addExplosion(enemy); //too call explosion afetre kill enemy
               //creating 5 Drone after HiveWhale lives end
               for (let i = 0; i < 5; i++) {
                 if (enemy.type === "hive") {
@@ -537,7 +598,12 @@ window.addEventListener("load", function () {
             }
           }
         });
+        this.explosions.forEach((explosion) => explosion.update(deltaTime)); //update explosions
+        this.explosions = this.explosions.filter(
+          (explosion) => !explosion.markedForDeletion
+        );
       });
+      
       this.enemies = this.enemies.filter((enemy) => !enemy.markedForDeletion); //filter enemies and get enmies active only
       if (this.enemyTimer > this.enemyInterval && !this.gameOver) {
         //check if timer over or not or game overOrNot
@@ -557,6 +623,9 @@ window.addEventListener("load", function () {
       this.enemies.forEach((enemy) => {
         enemy.draw(context); // call draw method all enmies on window to draw them  after moving
       });
+      this.explosions.forEach((explosion) => {
+        explosion.draw(context); // call draw method all explosions on window to draw them  after moving
+      });
       this.background.layer4.draw(context);
     }
     //this function to addEnemy to window
@@ -568,6 +637,18 @@ window.addEventListener("load", function () {
       //add instance from Hivewhale to list enemies
       else if (randomize < 0.8) this.enemies.push(new HiveWhale(this));
       else this.enemies.push(new LuckyFish(this)); //add luckyFish
+    }
+    //m7moud hassan  the method to add Explosion afetr kill enemy
+    addExplosion(enemy) {
+      const randomize = Math.random();
+      if(randomize<0.5){
+        this.explosions.push(new SmokeExplosion
+          (this,enemy.x+enemy.width*0.5,enemy.y+enemy.height*0.5)); //push SmokeExplosion to Window  
+      }else{
+        this.explosions.push(new FireExplosion
+          (this,enemy.x+enemy.width*0.5,enemy.y+enemy.height*0.5)); //push SmokeExplosion to Window
+  
+      }
     }
     //m7moud check collision return true or false
     checkCollision(rect1, rect2) {
