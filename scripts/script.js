@@ -77,11 +77,7 @@ window.addEventListener("load", function () {
         this.speedY = this.maxSpeed;
       else this.speedY = 0;
       this.y += this.speedY;
-      // vertical bounderies
-      if (this.y > this.game.height - this.height * 0.5)
-        this.y = this.game.height - this.height * 0.5;
-      else if (this.y < -this.height * 0.5) this.y = -this.height * 0.5;
-
+      
       //7 handel projectiles
       this.projectiles.forEach((projectile) => {
         projectile.update();
@@ -109,7 +105,7 @@ window.addEventListener("load", function () {
       }
     }
     draw(context) {
-      if (!this.game.debug)
+      if (this.game.debug)
         context.strokeRect(this.x, this.y, this.width, this.height);
         this.projectiles.forEach(projectile => {
           projectile.draw(context);
@@ -181,7 +177,7 @@ window.addEventListener("load", function () {
     draw(context) {
       //get context argument as parameter (context instance from convas)
 
-      if (!this.game.debug) {
+      if (this.game.debug) {
         //draw rectangle in position x,y and width and height only if the debug is true
         context.strokeRect(this.x, this.y, this.width, this.height);
       }
