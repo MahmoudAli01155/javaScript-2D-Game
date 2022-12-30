@@ -77,6 +77,11 @@ window.addEventListener("load", function () {
         this.speedY = this.maxSpeed;
       else this.speedY = 0;
       this.y += this.speedY;
+      // vertical bounderies
+      if (this.y > this.game.height - this.height * 0.5)
+        this.y = this.game.height - this.height * 0.5;
+      else if (this.y < -this.height * 0.5) this.y = -this.height * 0.5;
+
       //7 handel projectiles
       this.projectiles.forEach((projectile) => {
         projectile.update();
@@ -104,7 +109,7 @@ window.addEventListener("load", function () {
       }
     }
     draw(context) {
-      if (this.game.debug)
+      if (!this.game.debug)
         context.strokeRect(this.x, this.y, this.width, this.height);
         this.projectiles.forEach(projectile => {
           projectile.draw(context);
@@ -176,7 +181,7 @@ window.addEventListener("load", function () {
     draw(context) {
       //get context argument as parameter (context instance from convas)
 
-      if (this.game.debug) {
+      if (!this.game.debug) {
         //draw rectangle in position x,y and width and height only if the debug is true
         context.strokeRect(this.x, this.y, this.width, this.height);
       }
@@ -191,8 +196,10 @@ window.addEventListener("load", function () {
         this.width,
         this.height
       );
-      context.font = "20px Helvetica"; //
+      if(this.game.debug){
+        context.font = "20px Helvetica"; //
       context.fillText(this.lives, this.x, this.y); //draw text like 5
+      }
     }
   }
 
@@ -305,7 +312,7 @@ window.addEventListener("load", function () {
       context.shadowOffsetX = 2;
       context.shadowOffsetY = 2;
       context.shadowColor = "black";
-      context.font = this.fontSize + "px" + this.fontFamily;
+      context.font = this.fontSize + "px " + this.fontFamily
       //score
       context.fillText("Score: " + this.game.score, 20, 40);
       
@@ -320,23 +327,23 @@ window.addEventListener("load", function () {
         let message1;
         let message2;
         if (this.game.score > this.game.winningScore) {
-          message1 = "You Win!";
-          message2 = "Well done!";
+          message1 = "Most Wondrous!";
+          message2 = "Well done explorer!";
         } else {
-          message1 = "You lose";
-          message2 = "Try again next time!";
+          message1 = "Blazes!";
+          message2 = "Get my repair kit and try again!";
         }
-        context.font = "50px" + this.fontFamily;
+        context.font = "150px" + this.fontFamily;
         context.fillText(
           message1,
           this.game.width * 0.5,
-          this.game.height * 0.5 - 40
+          this.game.height * 0.5 - 20
         );
         context.font = "25px" + this.fontFamily;
         context.fillText(
           message2,
           this.game.width * 0.5,
-          this.game.height * 0.5 + 40
+          this.game.height * 0.5 + 20
         );
       }
        // ammo
@@ -370,7 +377,7 @@ window.addEventListener("load", function () {
       this.gameTime = 0; // time counter
       this.timeLimit = 15000; //time of the game
       this.speed = 1; // game speed
-      this.debug = true; //debug state
+      this.debug = false; //debug state
     }
     update(deltaTime) {
       //game time mang ment
